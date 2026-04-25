@@ -7,835 +7,269 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CVG Dorf">
 <meta name="theme-color" content="#1A1208">
-<title>CVG Dorf — Criadero</title>
-<link rel="manifest" href="#" id="manifest-link">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="apple-touch-icon" href="icon.png">
+<title>CVG Dorf</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink: #1A1208;
-  --paper: #F7F2E8;
-  --gold: #B8860B;
-  --gold-light: #D4A017;
-  --amber: #C47A2B;
-  --rust: #8B3A2A;
-  --sage: #4A7A50;
-  --sage-light: #6A9A70;
-  --muted: #7A6E5A;
-  --sand: #E8DFC8;
-  --sand-dark: #D8CDB8;
-  --cream: #FAF7F0;
-  --white: #FFFFFF;
-  --overlay: rgba(26,18,8,0.85);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'DM Mono', monospace;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  overflow-x: hidden;
-}
-
-/* ── LOADING ── */
-#loading {
-  position: fixed; inset: 0;
-  background: var(--ink);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  z-index: 100; gap: 24px;
-}
-#loading .logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 28px; font-weight: 300;
-  color: var(--paper); letter-spacing: 0.15em;
-  text-transform: uppercase;
-}
-#loading .logo em { color: var(--gold-light); font-style: italic; }
-#loading .spinner {
-  width: 32px; height: 32px;
-  border: 2px solid rgba(255,255,255,0.15);
-  border-top-color: var(--gold-light);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-#loading .status { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 0.1em; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── HEADER ── */
-.header {
-  background: var(--ink);
-  padding: env(safe-area-inset-top, 0px) 0 0;
-  position: sticky; top: 0; z-index: 20;
-}
-.header-inner {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px 12px;
-}
-.header-logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 300; font-size: 18px;
-  color: var(--paper); letter-spacing: 0.08em;
-}
-.header-logo em { color: var(--gold-light); font-style: italic; }
-.header-right { display: flex; align-items: center; gap: 10px; }
-.last-update { font-size: 9px; color: rgba(255,255,255,0.35); letter-spacing: 0.06em; }
-.refresh-btn {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.6); font-size: 13px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.2s;
-}
-.refresh-btn:active { background: rgba(255,255,255,0.15); transform: rotate(180deg); }
-.refresh-btn.spinning { animation: spin 0.8s linear infinite; }
-
-/* ── STAT STRIP ── */
-.stats {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 1px; background: rgba(255,255,255,0.06);
-}
-.stat {
-  background: var(--ink);
-  padding: 10px 8px 12px;
-  text-align: center; cursor: pointer;
-  transition: background 0.15s; border: none; width: 100%;
-  font-family: 'DM Mono', monospace;
-}
-.stat.active { background: #2A1E0C; }
-.stat:active { background: #2A1E0C; }
-.stat-n {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 32px; font-weight: 600; line-height: 1;
-}
-.stat-n.g { color: var(--sage-light); }
-.stat-n.a { color: var(--gold-light); }
-.stat-n.r { color: #E07060; }
-.stat-l { font-size: 8px; letter-spacing: 0.12em; opacity: 0.4;
-  margin-top: 3px; text-transform: uppercase; color: var(--paper); }
-
-/* ── FILTERS ── */
-.filters {
-  display: flex; gap: 6px; padding: 10px 14px;
-  overflow-x: auto; scrollbar-width: none;
-  background: var(--sand); border-bottom: 1px solid var(--sand-dark);
-}
-.filters::-webkit-scrollbar { display: none; }
-.ftab {
-  flex-shrink: 0; padding: 4px 12px; border-radius: 2px;
-  border: 1px solid #BEB3A0; background: transparent;
-  color: var(--muted); font-size: 9px; letter-spacing: 0.1em;
-  text-transform: uppercase; cursor: pointer;
-  font-family: 'DM Mono', monospace; transition: all 0.15s;
-}
-.ftab.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-
-/* ── SECTION ── */
-.section { display: none; }
-.section.visible { display: block; }
-
-.sec-head {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px 8px;
-}
-.sec-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.sd-g { background: var(--sage); }
-.sd-a { background: var(--gold); }
-.sd-r { background: var(--rust); }
-.sec-title { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.sec-count { margin-left: auto; font-size: 10px; color: var(--muted); }
-
-/* ── BREED GROUP ── */
-.breed-group { margin-bottom: 2px; }
-.breed-hdr {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 16px 4px;
-}
-.btag {
-  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 2px; font-weight: 500; flex-shrink: 0;
-}
-.bt-beagle { background: #EAD8A0; color: #5C4010; }
-.bt-dogo { background: #D0C5E8; color: #3C2A60; }
-.bt-sabueso { background: #C8DCCB; color: #1E4020; }
-.bt-pbm { background: #C8DCE8; color: #1A3050; }
-.bt-maltes { background: #E8C8DC; color: #501A40; }
-.bt-default { background: var(--sand); color: var(--muted); }
-.bcam { font-size: 9px; color: var(--muted); }
-
-/* ── PUP ROW ── */
-.pup {
-  display: flex; align-items: center;
-  padding: 9px 16px; border-bottom: 1px solid #EDE5D0;
-  background: #FDFAF4;
-}
-.pup:nth-child(even) { background: var(--cream); }
-.pnum {
-  width: 34px; height: 34px; border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 500; flex-shrink: 0; margin-right: 10px;
-}
-.pm { background: #C8DAEA; color: #1A3C5A; }
-.pf { background: #EAC8D0; color: #5A1A2A; }
-.pinfo { flex: 1; min-width: 0; }
-.p-r1 { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
-.p-raza { font-size: 11px; font-weight: 500; }
-.p-sexo { font-size: 9px; color: var(--muted); }
-.p-camada { font-size: 9px; color: var(--muted); }
-.p-r2 { font-size: 9px; color: var(--muted); }
-.vacs { display: flex; align-items: center; gap: 3px; margin-top: 3px; }
-.vlbl { font-size: 8px; color: var(--muted); margin-right: 1px; }
-.vdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.vd-done { background: var(--sage); }
-.vd-empty { background: #E0D8C0; border: 1px solid #C8BDA0; }
-.vsep { width: 1px; height: 9px; background: #D8CDB4; margin: 0 3px; }
-.pright { text-align: right; flex-shrink: 0; margin-left: 8px; }
-.pprecio { font-size: 11px; color: var(--ink); }
-.rdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-top: 3px; }
-.rd-no { background: #E07070; } .rd-warn { background: var(--amber); } .rd-yes { background: var(--sage); }
-
-/* ── RESERVA CARD ── */
-.rcard {
-  margin: 4px 14px 6px;
-  background: #FDFAF4; border: 1px solid #D8CDB4;
-  border-radius: 4px; overflow: hidden;
-}
-.rtop {
-  display: flex; align-items: center;
-  padding: 10px 12px; gap: 10px; cursor: pointer;
-}
-.rnum {
-  width: 34px; height: 34px; border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 500; flex-shrink: 0;
-}
-.rinfo { flex: 1; }
-.rname { font-size: 11px; font-weight: 500; }
-.rsub { font-size: 9px; color: var(--muted); margin-top: 2px; }
-.rbadge {
-  font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 3px 8px; border-radius: 2px; flex-shrink: 0;
-}
-.rb-a { background: #F5E8C8; color: #7A4A0A; border: 1px solid #D8B870; }
-.rb-p { background: #E8F0DC; color: #2A5020; border: 1px solid #8AB070; }
-.rbody { padding: 0 12px 12px; border-top: 1px solid #EAE2CE; display: none; }
-.prog { height: 3px; background: #E0D8C0; border-radius: 2px; margin: 10px 0 8px; }
-.progf { height: 100%; border-radius: 2px; }
-.pf-p { background: var(--amber); } .pf-f { background: var(--sage); }
-.rrows { display: flex; flex-direction: column; gap: 4px; }
-.rrow { display: flex; justify-content: space-between; font-size: 10px; }
-.rk { color: var(--muted); } .rv { color: var(--ink); }
-.rv-g { color: var(--sage); } .rv-a { color: var(--amber); }
-.rnote {
-  font-size: 9px; color: var(--muted); margin-top: 8px;
-  padding-top: 8px; border-top: 1px dashed #D8CDB4; font-style: italic;
-}
-.rvacs { display: flex; align-items: center; gap: 3px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #EAE2CE; }
-
-/* ── VAC ALERT SECTION ── */
-.vac-section { padding: 0 0 16px; }
-.vac-alert-card {
-  margin: 4px 14px;
-  border-radius: 4px; overflow: hidden;
-  border-left: 3px solid;
-}
-.va-overdue { border-color: var(--rust); background: #FDF0EE; }
-.va-soon { border-color: var(--gold); background: #FDF8EE; }
-.va-future { border-color: #D0C8B8; background: var(--cream); }
-.va-inner { padding: 8px 12px; }
-.va-top { display: flex; justify-content: space-between; align-items: center; }
-.va-name { font-size: 11px; font-weight: 500; }
-.va-badge { font-size: 8px; padding: 2px 7px; border-radius: 2px; letter-spacing: 0.08em; }
-.vab-overdue { background: var(--rust); color: #fff; }
-.vab-soon { background: var(--gold); color: #fff; }
-.vab-future { background: #D0C8B8; color: var(--muted); }
-.va-sub { font-size: 9px; color: var(--muted); margin-top: 3px; }
-.va-vacs { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
-.va-vac { font-size: 8px; padding: 2px 7px; border-radius: 2px; letter-spacing: 0.04em; }
-.vv-due { background: var(--rust); color: #fff; }
-.vv-soon { background: var(--gold); color: #fff; }
-.vv-future { background: #E0D8C0; color: var(--muted); }
-.vv-done { background: var(--sage); color: #fff; }
-
-.divider { height: 8px; background: var(--sand); }
-.empty-msg { text-align: center; padding: 32px 16px; font-size: 10px; color: var(--muted); letter-spacing: 0.06em; }
-
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--ink);
-  display: flex;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  border-top: 1px solid rgba(255,255,255,0.06);
-  z-index: 20;
-}
-.nav-btn {
-  flex: 1; padding: 10px 4px 8px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.35); transition: color 0.15s;
-  font-family: 'DM Mono', monospace;
-}
-.nav-btn.active { color: var(--gold-light); }
-.nav-btn:active { color: rgba(255,255,255,0.6); }
-.nav-icon { font-size: 16px; }
-.nav-lbl { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
-
-.main-content { padding-bottom: 60px; }
-
-/* ── SEARCH ── */
-.search-bar {
-  padding: 8px 14px;
-  background: var(--sand); border-bottom: 1px solid var(--sand-dark);
-  display: none;
-}
-.search-bar.visible { display: block; }
-.search-input {
-  width: 100%; padding: 7px 12px; border-radius: 2px;
-  border: 1px solid #BEB3A0; background: var(--cream);
-  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink);
-  outline: none;
-}
-.search-input:focus { border-color: var(--amber); }
+:root{--ink:#1A1208;--paper:#F7F2E8;--gold:#B8860B;--gold-l:#D4A017;--amber:#C47A2B;--rust:#8B3A2A;--sage:#4A7A50;--sage-l:#6A9A70;--muted:#7A6E5A;--sand:#E8DFC8;--sand-d:#D8CDB8;--cream:#FAF7F0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;padding-bottom:64px}
+#loading{position:fixed;inset:0;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:20px;transition:opacity .4s}
+#loading.fade{opacity:0;pointer-events:none}
+.ld-logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--paper);letter-spacing:.15em;text-transform:uppercase}
+.ld-logo em{color:var(--gold-l);font-style:italic}
+.ld-spin{width:28px;height:28px;border:2px solid rgba(255,255,255,.12);border-top-color:var(--gold-l);border-radius:50%;animation:spin .8s linear infinite}
+.ld-txt{font-size:9px;color:rgba(255,255,255,.35);letter-spacing:.1em}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hdr{background:var(--ink);position:sticky;top:0;z-index:20;padding:env(safe-area-inset-top,0) 0 0}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px}
+.hdr-logo{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:17px;color:var(--paper);letter-spacing:.08em}
+.hdr-logo em{color:var(--gold-l);font-style:italic}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.upd{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.05em}
+.rfbtn{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.rfbtn:active{background:rgba(255,255,255,.15);transform:rotate(180deg)}
+.rfbtn.spin{animation:spin .8s linear infinite}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.05)}
+.stt{background:var(--ink);padding:10px 6px 12px;text-align:center;cursor:pointer;transition:background .15s;border:none;width:100%;font-family:'DM Mono',monospace}
+.stt.on,.stt:active{background:#2A1E0C}
+.stt-n{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:600;line-height:1}
+.stt-n.g{color:#7FC77A}.stt-n.a{color:var(--gold-l)}.stt-n.r{color:#E07060}
+.stt-l{font-size:8px;letter-spacing:.1em;opacity:.4;margin-top:2px;text-transform:uppercase;color:var(--paper)}
+.fltrs{display:flex;gap:5px;padding:9px 14px;overflow-x:auto;scrollbar-width:none;background:var(--sand);border-bottom:1px solid var(--sand-d)}
+.fltrs::-webkit-scrollbar{display:none}
+.ftb{flex-shrink:0;padding:4px 11px;border-radius:2px;border:1px solid #BEB3A0;background:transparent;color:var(--muted);font-size:9px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Mono',monospace;transition:all .15s}
+.ftb.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.srch{padding:8px 14px;background:var(--sand);border-bottom:1px solid var(--sand-d);display:none}
+.srch.show{display:block}
+.srch input{width:100%;padding:7px 11px;border-radius:2px;border:1px solid #BEB3A0;background:var(--cream);font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);outline:none}
+.srch input:focus{border-color:var(--amber)}
+.sec{display:none}.sec.on{display:block}
+.sec-hd{display:flex;align-items:center;gap:9px;padding:13px 16px 7px}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sdot-g{background:var(--sage)}.sdot-a{background:var(--gold)}.sdot-r{background:var(--rust)}
+.sec-ttl{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.sec-cnt{margin-left:auto;font-size:10px;color:var(--muted)}
+.bg-hdr{display:flex;align-items:center;gap:7px;padding:7px 16px 3px}
+.btag{font-size:8px;letter-spacing:.09em;text-transform:uppercase;padding:2px 8px;border-radius:2px;font-weight:500;flex-shrink:0}
+.bt-b{background:#EAD8A0;color:#5C4010}.bt-d{background:#D0C5E8;color:#3C2A60}.bt-s{background:#C8DCCB;color:#1E4020}.bt-p{background:#C8DCE8;color:#1A3050}.bt-m{background:#E8C8DC;color:#501A40}.bt-x{background:var(--sand);color:var(--muted)}
+.bcam{font-size:9px;color:var(--muted)}
+.pup{display:flex;align-items:center;padding:9px 16px;border-bottom:1px solid #EDE5D0;background:#FDFAF4}
+.pup:nth-child(even){background:var(--cream)}
+.pno{width:33px;height:33px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-right:10px}
+.pm{background:#C8DAEA;color:#1A3C5A}.pf{background:#EAC8D0;color:#5A1A2A}
+.pinf{flex:1;min-width:0}
+.pr1{display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.praza{font-size:11px;font-weight:500}.psex{font-size:9px;color:var(--muted)}.pcam{font-size:9px;color:var(--muted)}
+.pr2{font-size:9px;color:var(--muted);margin-bottom:3px}
+.vrow{display:flex;align-items:center;gap:3px}
+.vl{font-size:8px;color:var(--muted);margin-right:1px}
+.vd{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.vd-y{background:var(--sage)}.vd-n{background:#E0D8C0;border:1px solid #C8BDA0}
+.vsep{width:1px;height:9px;background:#D8CDB4;margin:0 3px}
+.prt{text-align:right;flex-shrink:0;margin-left:8px}
+.pprc{font-size:11px;color:var(--ink)}
+.rdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-top:3px}
+.rd-n{background:#E07070}.rd-w{background:var(--amber)}.rd-y{background:var(--sage)}
+.rc{margin:4px 14px 6px;background:#FDFAF4;border:1px solid #D8CDB4;border-radius:4px;overflow:hidden}
+.rc-top{display:flex;align-items:center;padding:10px 11px;gap:9px;cursor:pointer}
+.rno{width:33px;height:33px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.ri{flex:1}.rn{font-size:11px;font-weight:500}.rs{font-size:9px;color:var(--muted);margin-top:1px}
+.rbdg{font-size:8px;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:2px;flex-shrink:0;white-space:nowrap}
+.rbdg-a{background:#F5E8C8;color:#7A4A0A;border:1px solid #D8B870}
+.rc-body{padding:0 11px 11px;border-top:1px solid #EAE2CE;display:none}
+.prog{height:3px;background:#E0D8C0;border-radius:2px;margin:9px 0 7px}
+.progf{height:100%;border-radius:2px;background:var(--amber)}
+.rrows{display:flex;flex-direction:column;gap:3px}
+.rr{display:flex;justify-content:space-between;font-size:10px}
+.rk{color:var(--muted)}.rv{color:var(--ink)}.rv-g{color:var(--sage)}.rv-a{color:var(--amber)}
+.rnote{font-size:9px;color:var(--muted);margin-top:7px;padding-top:7px;border-top:1px dashed #D8CDB4;font-style:italic}
+.rvacs{display:flex;align-items:center;gap:3px;margin-top:9px;padding-top:7px;border-top:1px solid #EAE2CE}
+.va{margin:4px 14px 4px;border-radius:4px;overflow:hidden;border-left:3px solid}
+.va-ov{border-color:var(--rust);background:#FDF0EE}
+.va-sn{border-color:var(--gold);background:#FDF8EE}
+.va-in{padding:8px 11px}
+.va-top{display:flex;justify-content:space-between;align-items:center}
+.va-nm{font-size:11px;font-weight:500}
+.va-bdg{font-size:8px;padding:2px 7px;border-radius:2px;letter-spacing:.07em}
+.vab-ov{background:var(--rust);color:#fff}.vab-sn{background:var(--gold);color:#fff}
+.va-sub{font-size:9px;color:var(--muted);margin-top:2px}
+.va-pills{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.vp{font-size:8px;padding:2px 7px;border-radius:2px}
+.vp-ov{background:var(--rust);color:#fff}.vp-sn{background:var(--gold);color:#fff}
+.empty{text-align:center;padding:28px 16px;font-size:10px;color:var(--muted);letter-spacing:.06em}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--ink);display:flex;padding-bottom:env(safe-area-inset-bottom,0);border-top:1px solid rgba(255,255,255,.06);z-index:20}
+.nb{flex:1;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,.3);transition:color .15s;font-family:'DM Mono',monospace}
+.nb.on{color:var(--gold-l)}.nb:active{color:rgba(255,255,255,.6)}
+.nb-ic{font-size:15px}.nb-lb{font-size:8px;letter-spacing:.07em;text-transform:uppercase}
 </style>
 </head>
 <body>
-
 <div id="loading">
-  <div class="logo">Von <em>Grünes</em> Dorf</div>
-  <div class="spinner"></div>
-  <div class="status" id="load-status">Cargando datos...</div>
+  <div class="ld-logo">Von <em>Grünes</em> Dorf</div>
+  <div class="ld-spin"></div>
+  <div class="ld-txt" id="ld-txt">Conectando...</div>
 </div>
-
-<div class="header">
-  <div class="header-inner">
-    <div class="header-logo">Von <em>Grünes</em> Dorf</div>
-    <div class="header-right">
-      <div class="last-update" id="last-update">—</div>
-      <button class="refresh-btn" id="refresh-btn" onclick="loadData()" title="Actualizar">↻</button>
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-logo">Von <em>Grünes</em> Dorf</div>
+    <div class="hdr-r">
+      <div class="upd" id="upd">--</div>
+      <button class="rfbtn" id="rfbtn" onclick="loadData()">&#x21BB;</button>
     </div>
   </div>
   <div class="stats">
-    <button class="stat active" id="stat-libre" onclick="setTab('libre',this)">
-      <div class="stat-n g" id="cnt-libre">—</div>
-      <div class="stat-l">Libres</div>
+    <button class="stt on" id="st-libre" onclick="setTab('libre',this)">
+      <div class="stt-n g" id="cn-libre">--</div><div class="stt-l">Libres</div>
     </button>
-    <button class="stat" id="stat-anticipo" onclick="setTab('anticipo',this)">
-      <div class="stat-n a" id="cnt-anticipo">—</div>
-      <div class="stat-l">Con anticipo</div>
+    <button class="stt" id="st-anticipo" onclick="setTab('anticipo',this)">
+      <div class="stt-n a" id="cn-anticipo">--</div><div class="stt-l">Con anticipo</div>
     </button>
-    <button class="stat" id="stat-vacunas" onclick="setTab('vacunas',this)">
-      <div class="stat-n r" id="cnt-vacunas">—</div>
-      <div class="stat-l">Vac. urgentes</div>
+    <button class="stt" id="st-vacunas" onclick="setTab('vacunas',this)">
+      <div class="stt-n r" id="cn-vacunas">--</div><div class="stt-l">Vac. urgentes</div>
     </button>
   </div>
-  <div class="filters" id="filters">
-    <button class="ftab on" onclick="setRaza('all',this)">Todos</button>
+  <div class="fltrs" id="fltrs">
+    <button class="ftb on" onclick="setRaza('all',this)">Todos</button>
   </div>
 </div>
-
-<div class="search-bar" id="search-bar">
-  <input class="search-input" id="search-input" placeholder="Buscar por número, raza, madre..." oninput="applyFilters()">
+<div class="srch" id="srch">
+  <input id="srch-in" placeholder="Buscar numero, raza, madre, camada..." oninput="applyFilters()">
 </div>
-
-<div class="main-content" id="main-content">
-  <!-- populated by JS -->
-</div>
-
-<div class="bottom-nav">
-  <button class="nav-btn active" onclick="setTab('libre',document.getElementById('stat-libre'))">
-    <div class="nav-icon">🐕</div><div class="nav-lbl">Libres</div>
+<div id="content"></div>
+<div class="bnav">
+  <button class="nb on" onclick="setTab('libre',document.getElementById('st-libre'))">
+    <div class="nb-ic">&#x1F415;</div><div class="nb-lb">Libres</div>
   </button>
-  <button class="nav-btn" onclick="setTab('anticipo',document.getElementById('stat-anticipo'))">
-    <div class="nav-icon">📋</div><div class="nav-lbl">Anticipo</div>
+  <button class="nb" onclick="setTab('anticipo',document.getElementById('st-anticipo'))">
+    <div class="nb-ic">&#x1F4CB;</div><div class="nb-lb">Anticipo</div>
   </button>
-  <button class="nav-btn" onclick="setTab('vacunas',document.getElementById('stat-vacunas'))">
-    <div class="nav-icon">💉</div><div class="nav-lbl">Vacunas</div>
+  <button class="nb" onclick="setTab('vacunas',document.getElementById('st-vacunas'))">
+    <div class="nb-ic">&#x1F489;</div><div class="nb-lb">Vacunas</div>
   </button>
-  <button class="nav-btn" onclick="toggleSearch()">
-    <div class="nav-icon">🔍</div><div class="nav-lbl">Buscar</div>
+  <button class="nb" id="nb-srch" onclick="toggleSearch()">
+    <div class="nb-ic">&#x1F50D;</div><div class="nb-lb">Buscar</div>
   </button>
 </div>
-
 <script>
-const API_KEY   = 'AIzaSyCrIsF7R_koev3lU2H0jW4y9L7-tk_vAYY';
-const SHEET_ID  = '14GzqWO5Fx2toh-gByAIIlon-QV0IPgOwNNtBARhg4EE';
-const SHEET_TAB = 'Cachorros';
-const RANGE     = `${SHEET_TAB}!A:R`;
-
-// Col indices (0-based) matching our sheet
-const COL = {
-  no:0, camada:1, tipo:2, madre:3, padre:4, sexo:5, fn:6,
-  parvo:7, cano1:8, cano2:9, hunt1:10, hunt2:11,
-  estado:12, precio:13, anticipo:14, pendiente:15, notas:16, fecha_camada:17
-};
-
-const PROTOCOL = { parvo:28, cano1:42, cano2:56, hunt1:21, hunt2:22 };
-const VAC_LABELS = { parvo:'Parvomune', cano1:'Canomune×1', cano2:'Canomune×2', hunt1:'Hunter×1', hunt2:'Hunter×2' };
-
-let allData = [];
-let curTab = 'libre';
-let curRaza = 'all';
-let searchActive = false;
-
-function parseDate(s) {
-  if (!s) return null;
-  const p = s.split('/');
-  if (p.length !== 3) return null;
-  return new Date(+p[2], +p[1]-1, +p[0]);
+var API_KEY='AIzaSyCrIsF7R_koev3lU2H0jW4y9L7-tk_vAYY';
+var SHEET_ID='14GzqWO5Fx2toh-gByAIIlon-QV0IPgOwNNtBARhg4EE';
+var RANGE='Cachorros!A:R';
+var C={no:0,camada:1,tipo:2,madre:3,padre:4,sexo:5,fn:6,parvo:7,cano1:8,cano2:9,hunt1:10,hunt2:11,estado:12,precio:13,anticipo:14,pendiente:15,notas:16,fecha_camada:17};
+var PROTO={parvo:28,cano1:42,cano2:56,hunt1:21,hunt2:22};
+var VLBL={parvo:'Parvomune',cano1:'Cano x1',cano2:'Cano x2',hunt1:'Hunter x1',hunt2:'Hunter x2'};
+var data=[],curTab='libre',curRaza='all',srchOpen=false;
+function pd(s){if(!s||!s.trim())return null;var p=s.trim().split('/');if(p.length!==3)return null;return new Date(+p[2],+p[1]-1,+p[0]);}
+function tod(){var d=new Date();d.setHours(0,0,0,0);return d;}
+function wks(fn){if(!fn)return 0;return Math.floor((tod()-fn)/(7*86400000));}
+function due(fn,days){if(!fn)return null;var d=new Date(fn);d.setDate(d.getDate()+days);return d;}
+function vacSt(fn,done,days){if(done&&done.trim())return 'done';var d=due(fn,days);if(!d)return 'unk';var diff=Math.floor((d-tod())/86400000);if(diff<0)return 'ov';if(diff<=7)return 'sn';return 'ft';}
+function vacDiff(fn,days){var d=due(fn,days);if(!d)return null;return Math.floor((d-tod())/86400000);}
+function fmtQ(v){if(!v||v==='')return '--';var n=parseFloat(v);return isNaN(n)?v:'Q'+n.toLocaleString('es-GT');}
+function vd(done){return '<div class="vd '+(done?'vd-y':'vd-n')+'"></div>';}
+function rdot(w){return w<6?'rd-n':w<8?'rd-w':'rd-y';}
+function bCls(t){t=t.toLowerCase();if(t.includes('beagle'))return 'bt-b';if(t.includes('dogo'))return 'bt-d';if(t.includes('sabueso'))return 'bt-s';if(t.includes('belga')||t.includes('malinois'))return 'bt-p';if(t.includes('malt')||t.includes('golden'))return 'bt-m';return 'bt-x';}
+function shT(t){if(t.includes('Pastor Belga Malinois'))return 'P.B. Malinois';if(t.includes('Maltes')||t.includes('Golden')||t.includes('Malt'))return 'Maltes/Golden';return t;}
+async function loadData(){
+  var btn=document.getElementById('rfbtn');btn.classList.add('spin');
+  document.getElementById('ld-txt').textContent='Cargando datos...';
+  try{
+    var url='https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'/values/'+encodeURIComponent(RANGE)+'?key='+API_KEY;
+    var res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
+    var json=await res.json();var rows=json.values||[];if(rows.length<2)throw new Error('Sin datos');
+    data=rows.slice(1).map(function(r){return{no:parseInt(r[C.no])||0,camada:r[C.camada]||'',tipo:r[C.tipo]||'',madre:r[C.madre]||'',padre:r[C.padre]||'',sexo:r[C.sexo]||'',fn:pd(r[C.fn]),fnStr:r[C.fn]||'',parvo:r[C.parvo]||'',cano1:r[C.cano1]||'',cano2:r[C.cano2]||'',hunt1:r[C.hunt1]||'',hunt2:r[C.hunt2]||'',estado:r[C.estado]||'',precio:r[C.precio]||'',anticipo:r[C.anticipo]||'',pendiente:r[C.pendiente]||'',notas:r[C.notas]||'',fecha_camada:r[C.fecha_camada]||''};}).filter(function(r){return r.no>0;});
+    buildFilters();render();
+    document.getElementById('upd').textContent=new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'});
+    setTimeout(function(){document.getElementById('loading').classList.add('fade');setTimeout(function(){document.getElementById('loading').style.display='none';},400);},300);
+  }catch(e){document.getElementById('ld-txt').textContent='Error: '+e.message;}
+  btn.classList.remove('spin');
 }
-
-function today() { const d=new Date(); d.setHours(0,0,0,0); return d; }
-
-function weeksOld(fn) {
-  if (!fn) return 0;
-  return Math.floor((today()-fn)/(7*86400000));
+function buildFilters(){
+  var cr=data.filter(function(r){return r.estado==='Criadero';});
+  var razas=[...new Set(cr.map(function(r){return r.tipo;}))].sort();
+  var f=document.getElementById('fltrs');
+  f.innerHTML='<button class="ftb on" onclick="setRaza(\'all\',this)">Todos</button>';
+  razas.forEach(function(raza){var b=document.createElement('button');b.className='ftb';b.textContent=shT(raza);b.onclick=function(){setRaza(raza,this);};f.appendChild(b);});
 }
-
-function vacDueDate(fn, days) {
-  if (!fn) return null;
-  const d = new Date(fn); d.setDate(d.getDate()+days); return d;
+function groupBy(arr){
+  var m=new Map();
+  arr.forEach(function(p){var k=p.camada+'|'+p.madre+'|'+p.padre;if(!m.has(k))m.set(k,{camada:p.camada,madre:p.madre,padre:p.padre,tipo:p.tipo,fecha:p.fecha_camada,pups:[]});m.get(k).pups.push(p);});
+  return [...m.values()];
 }
-
-function vacStatus(fn, doneVal, days) {
-  const done = doneVal && doneVal.trim();
-  if (done) return 'done';
-  const due = vacDueDate(fn, days);
-  if (!due) return 'unknown';
-  const diff = Math.floor((due - today())/86400000);
-  if (diff < 0) return 'overdue';
-  if (diff <= 7) return 'soon';
-  return 'future';
-}
-
-function vacDiff(fn, days) {
-  const due = vacDueDate(fn, days);
-  if (!due) return null;
-  return Math.floor((due - today())/86400000);
-}
-
-function rdotClass(weeks) {
-  if (weeks < 6) return 'rd-no';
-  if (weeks < 8) return 'rd-warn';
-  return 'rd-yes';
-}
-
-function breedTag(tipo) {
-  const t = tipo.toLowerCase();
-  if (t.includes('beagle')) return 'bt-beagle';
-  if (t.includes('dogo')) return 'bt-dogo';
-  if (t.includes('sabueso')) return 'bt-sabueso';
-  if (t.includes('belga') || t.includes('malinois')) return 'bt-pbm';
-  if (t.includes('malt') || t.includes('golden')) return 'bt-maltes';
-  return 'bt-default';
-}
-
-function shortRaza(tipo) {
-  if (tipo.includes('Pastor Belga Malinois')) return 'P.B. Malinois';
-  if (tipo.includes('Maltés') || tipo.includes('Golden')) return 'Maltés/Golden';
-  return tipo;
-}
-
-function fmtQ(v) {
-  if (!v || v === '') return '—';
-  const n = parseFloat(v);
-  return isNaN(n) ? v : 'Q' + n.toLocaleString('es-GT');
-}
-
-function vdotHtml(done) {
-  return `<div class="vdot ${done?'vd-done':'vd-empty'}"></div>`;
-}
-
-async function loadData() {
-  const btn = document.getElementById('refresh-btn');
-  btn.classList.add('spinning');
-  document.getElementById('load-status').textContent = 'Conectando con Google Sheets...';
-
-  try {
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(RANGE)}?key=${API_KEY}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    const rows = json.values || [];
-
-    if (rows.length < 2) throw new Error('No data found');
-
-    // Skip header row
-    allData = rows.slice(1).map(r => ({
-      no:       parseInt(r[COL.no]) || 0,
-      camada:   r[COL.camada] || '',
-      tipo:     r[COL.tipo] || '',
-      madre:    r[COL.madre] || '',
-      padre:    r[COL.padre] || '',
-      sexo:     r[COL.sexo] || '',
-      fn:       parseDate(r[COL.fn]),
-      fnStr:    r[COL.fn] || '',
-      parvo:    r[COL.parvo] || '',
-      cano1:    r[COL.cano1] || '',
-      cano2:    r[COL.cano2] || '',
-      hunt1:    r[COL.hunt1] || '',
-      hunt2:    r[COL.hunt2] || '',
-      estado:   r[COL.estado] || '',
-      precio:   r[COL.precio] || '',
-      anticipo: r[COL.anticipo] || '',
-      pendiente:r[COL.pendiente] || '',
-      notas:    r[COL.notas] || '',
-      fecha_camada: r[COL.fecha_camada] || '',
-    })).filter(r => r.no > 0);
-
-    buildRazaFilters();
-    renderAll();
-
-    const now = new Date();
-    document.getElementById('last-update').textContent =
-      now.toLocaleTimeString('es-GT', {hour:'2-digit',minute:'2-digit'});
-
-    document.getElementById('loading').style.display = 'none';
-  } catch(e) {
-    document.getElementById('load-status').textContent = 'Error: ' + e.message;
-    console.error(e);
-  }
-  btn.classList.remove('spinning');
-}
-
-function buildRazaFilters() {
-  const criadero = allData.filter(r => r.estado === 'Criadero');
-  const razas = [...new Set(criadero.map(r => r.tipo))].sort();
-  const filters = document.getElementById('filters');
-  filters.innerHTML = '<button class="ftab on" onclick="setRaza(\'all\',this)">Todos</button>';
-  razas.forEach(raza => {
-    const short = shortRaza(raza);
-    const btn = document.createElement('button');
-    btn.className = 'ftab';
-    btn.textContent = short;
-    btn.onclick = function(){ setRaza(raza, this); };
-    filters.appendChild(btn);
+function render(){
+  var cr=data.filter(function(r){return r.estado==='Criadero';});
+  var libres=cr.filter(function(r){return !r.anticipo||r.anticipo==='';});
+  var anticipo=cr.filter(function(r){return r.anticipo&&parseFloat(r.pendiente||0)>0;});
+  var urgent=cr.filter(function(r){return ['parvo','cano1','cano2','hunt1','hunt2'].some(function(v){return ['ov','sn'].includes(vacSt(r.fn,r[v],PROTO[v]));});});
+  document.getElementById('cn-libre').textContent=libres.length;
+  document.getElementById('cn-anticipo').textContent=anticipo.length;
+  document.getElementById('cn-vacunas').textContent=urgent.length;
+  var html='';
+  html+='<div class="sec" id="sec-libre"><div class="sec-hd"><div class="sdot sdot-g"></div><div class="sec-ttl">Sin anticipo</div><div class="sec-cnt">'+libres.length+' cachorros</div></div>';
+  groupBy(libres).forEach(function(g){
+    html+='<div class="bg-hdr"><span class="btag '+bCls(g.tipo)+'">'+shT(g.tipo)+'</span><span class="bcam">'+g.camada+' · '+g.madre+' x '+g.padre+' · '+g.fecha+'</span></div>';
+    g.pups.forEach(function(p){var w=p.fn?wks(p.fn):0;html+='<div class="pup" data-raza="'+p.tipo+'" data-s="'+p.no+' '+p.tipo+' '+p.madre+' '+p.camada+'"><div class="pno '+(p.sexo==='Macho'?'pm':'pf')+'">'+p.no+'</div><div class="pinf"><div class="pr1"><span class="praza">'+shT(p.tipo)+'</span><span class="psex">'+p.sexo+'</span><span class="pcam">'+p.camada+'</span></div><div class="pr2">'+p.madre+' x '+p.padre+' · '+w+' sem</div><div class="vrow"><span class="vl">Vac</span>'+vd(p.parvo)+vd(p.cano1)+vd(p.cano2)+'<div class="vsep"></div><span class="vl">Desp</span>'+vd(p.hunt1)+vd(p.hunt2)+'</div></div><div class="prt"><div class="pprc">'+fmtQ(p.precio)+'</div><span class="rdot '+rdot(w)+'"></span></div></div>';});
   });
+  if(!libres.length)html+='<div class="empty">Sin cachorros libres</div>';
+  html+='</div>';
+  html+='<div class="sec" id="sec-anticipo"><div class="sec-hd"><div class="sdot sdot-a"></div><div class="sec-ttl">Con anticipo recibido</div><div class="sec-cnt">'+anticipo.length+' cachorros</div></div>';
+  anticipo.forEach(function(p){var w=p.fn?wks(p.fn):0;var ant=parseFloat(p.anticipo)||0;var prec=parseFloat(p.precio)||0;var pend=parseFloat(p.pendiente)||0;var pct=prec?Math.round(ant/prec*100):0;html+='<div class="rc" data-raza="'+p.tipo+'" data-s="'+p.no+' '+p.tipo+' '+p.madre+' '+p.camada+'"><div class="rc-top" onclick="tog(this)"><div class="rno '+(p.sexo==='Macho'?'pm':'pf')+'">'+p.no+'</div><div class="ri"><div class="rn">'+shT(p.tipo)+' '+p.sexo+'</div><div class="rs">'+p.camada+' · '+p.madre+' x '+p.padre+' · '+w+' sem</div></div><div class="rbdg rbdg-a">Q'+pend.toLocaleString('es-GT')+' pend.</div></div><div class="rc-body"><div class="prog"><div class="progf" style="width:'+pct+'%"></div></div><div class="rrows"><div class="rr"><span class="rk">Total acordado</span><span class="rv">'+fmtQ(p.precio)+'</span></div><div class="rr"><span class="rk">Anticipo recibido</span><span class="rv rv-g">'+fmtQ(p.anticipo)+'</span></div><div class="rr"><span class="rk">Pendiente</span><span class="rv rv-a">'+fmtQ(p.pendiente)+'</span></div></div>'+(p.notas?'<div class="rnote">'+p.notas+'</div>':'')+'<div class="rvacs"><span class="vl">Vac</span>'+vd(p.parvo)+vd(p.cano1)+vd(p.cano2)+'<div class="vsep"></div><span class="vl">Desp</span>'+vd(p.hunt1)+vd(p.hunt2)+'</div></div></div>';});
+  if(!anticipo.length)html+='<div class="empty">Sin cachorros con anticipo</div>';
+  html+='</div>';
+  var vacAlerts=[];
+  cr.forEach(function(p){var pending=['parvo','cano1','cano2','hunt1','hunt2'].filter(function(v){var st=vacSt(p.fn,p[v],PROTO[v]);return st==='ov'||st==='sn';});if(!pending.length)return;var worst=pending.some(function(v){return vacSt(p.fn,p[v],PROTO[v])==='ov';})?'ov':'sn';vacAlerts.push({p:p,pending:pending,worst:worst});});
+  vacAlerts.sort(function(a,b){return (a.worst==='ov'?0:1)-(b.worst==='ov'?0:1);});
+  var ovCnt=vacAlerts.filter(function(a){return a.worst==='ov';}).length;
+  var snCnt=vacAlerts.filter(function(a){return a.worst==='sn';}).length;
+  html+='<div class="sec" id="sec-vacunas"><div class="sec-hd"><div class="sdot sdot-r"></div><div class="sec-ttl">Control de vacunas</div><div class="sec-cnt">'+ovCnt+' vencidas · '+snCnt+' proximas</div></div>';
+  if(!vacAlerts.length){html+='<div class="empty">Todas las vacunas al dia</div>';}
+  else{vacAlerts.forEach(function(a){var p=a.p;var w=p.fn?wks(p.fn):0;html+='<div class="va '+(a.worst==='ov'?'va-ov':'va-sn')+'" data-raza="'+p.tipo+'" data-s="'+p.no+' '+p.tipo+' '+p.madre+'"><div class="va-in"><div class="va-top"><div class="va-nm">No.'+p.no+' -- '+shT(p.tipo)+' '+p.sexo+'</div><span class="va-bdg '+(a.worst==='ov'?'vab-ov':'vab-sn')+'">'+(a.worst==='ov'?'VENCIDA':'PROXIMA')+'</span></div><div class="va-sub">'+p.camada+' · '+p.madre+' x '+p.padre+' · '+w+' sem</div><div class="va-pills">'+a.pending.map(function(v){var st=vacSt(p.fn,p[v],PROTO[v]);var diff=vacDiff(p.fn,PROTO[v]);var cls=st==='ov'?'vp-ov':'vp-sn';var txt=diff!==null?(diff<0?' ('+Math.abs(diff)+'d atras)':diff===0?' (hoy)':' ('+diff+'d)'):'';return '<span class="vp '+cls+'">'+VLBL[v]+txt+'</span>';}).join('')+'</div></div></div>';});}
+  html+='</div>';
+  document.getElementById('content').innerHTML=html;
+  setTab(curTab,document.getElementById('st-'+curTab));
 }
+function setTab(tab,el){curTab=tab;document.querySelectorAll('.stt').forEach(function(s){s.classList.remove('on');});if(el)el.classList.add('on');document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});var navMap={libre:0,anticipo:1,vacunas:2};var nbs=document.querySelectorAll('.nb');if(navMap[tab]!==undefined)nbs[navMap[tab]].classList.add('on');document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});var s=document.getElementById('sec-'+tab);if(s)s.classList.add('on');applyFilters();}
+function setRaza(raza,btn){curRaza=raza;document.querySelectorAll('.ftb').forEach(function(b){b.classList.remove('on');});if(btn)btn.classList.add('on');applyFilters();}
+function applyFilters(){var q=(document.getElementById('srch-in').value||'').toLowerCase();document.querySelectorAll('.pup,.rc,.va').forEach(function(el){var razaOk=curRaza==='all'||el.dataset.raza===curRaza;var srchOk=!q||(el.dataset.s||'').toLowerCase().includes(q);el.style.display=(razaOk&&srchOk)?'':'none';});document.querySelectorAll('#sec-libre .bg-hdr').forEach(function(hdr){var next=hdr.nextElementSibling;var vis=false;while(next&&next.classList.contains('pup')){if(next.style.display!=='none')vis=true;next=next.nextElementSibling;}hdr.style.display=vis?'':'none';});}
+function tog(hdr){var b=hdr.nextElementSibling;b.style.display=b.style.display==='block'?'none':'block';}
+function toggleSearch(){srchOpen=!srchOpen;document.getElementById('srch').classList.toggle('show',srchOpen);document.getElementById('nb-srch').classList.toggle('on',srchOpen);if(srchOpen)document.getElementById('srch-in').focus();else{document.getElementById('srch-in').value='';applyFilters();}}
 
-function renderAll() {
-  const criadero = allData.filter(r => r.estado === 'Criadero');
-  const libres = criadero.filter(r => !r.anticipo || r.anticipo === '');
-  const conAnticipo = criadero.filter(r => r.anticipo && parseFloat(r.pendiente) > 0);
+// Generate GSD icon as SVG then convert to data URL for manifest
+var iconSvg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#1A1208"/><g transform="translate(60,40) scale(0.76)">'
++'<ellipse cx="300" cy="380" rx="180" ry="90" fill="#8B6914"/>'
++'<ellipse cx="300" cy="360" rx="160" ry="80" fill="#A07820"/>'
++'<path d="M180 340 Q200 280 260 260 Q300 250 340 260 Q400 280 420 340" fill="#8B6914"/>'
++'<ellipse cx="300" cy="260" rx="90" ry="100" fill="#A07820"/>'
++'<ellipse cx="300" cy="255" rx="80" ry="85" fill="#B88C30"/>'
++'<path d="M215 200 Q220 140 240 120 Q255 108 265 125 Q270 155 268 200" fill="#2C2010"/>'
++'<path d="M385 200 Q380 140 360 120 Q345 108 335 125 Q330 155 332 200" fill="#2C2010"/>'
++'<ellipse cx="275" cy="290" rx="18" ry="22" fill="#1A1208"/>'
++'<ellipse cx="325" cy="290" rx="18" ry="22" fill="#1A1208"/>'
++'<ellipse cx="277" cy="288" rx="8" ry="10" fill="#4A90D9"/>'
++'<ellipse cx="327" cy="288" rx="8" ry="10" fill="#4A90D9"/>'
++'<ellipse cx="279" cy="286" rx="4" ry="5" fill="#fff"/>'
++'<ellipse cx="329" cy="286" rx="4" ry="5" fill="#fff"/>'
++'<ellipse cx="300" cy="330" rx="30" ry="18" fill="#8B5E1A"/>'
++'<ellipse cx="300" cy="335" rx="22" ry="12" fill="#C0392B"/>'
++'<path d="M240 220 Q300 200 360 220" stroke="#2C2010" stroke-width="3" fill="none"/>'
++'<path d="M160 380 Q140 420 130 460 Q145 465 155 460 Q165 430 180 400" fill="#8B6914"/>'
++'<path d="M440 380 Q460 420 470 460 Q455 465 445 460 Q435 430 420 400" fill="#8B6914"/>'
++'<path d="M200 440 Q190 470 185 490 Q200 495 210 488 Q215 465 225 445" fill="#8B6914"/>'
++'<path d="M400 440 Q410 470 415 490 Q400 495 390 488 Q385 465 375 445" fill="#8B6914"/>'
++'<path d="M220 255 Q200 260 185 275 Q195 290 215 285" fill="#A07820"/>'
++'<path d="M380 255 Q400 260 415 275 Q405 290 385 285" fill="#A07820"/>'
++'<path d="M240 220 Q225 215 215 225 Q220 240 235 238" fill="#2C2010"/>'
++'<path d="M360 220 Q375 215 385 225 Q380 240 365 238" fill="#2C2010"/>'
++'</g></svg>';
 
-  // Count urgent vacunas
-  const urgentVacs = criadero.filter(r => {
-    return ['parvo','cano1','cano2','hunt1','hunt2'].some(v => {
-      const st = vacStatus(r.fn, r[v], PROTOCOL[v]);
-      return st === 'overdue' || st === 'soon';
-    });
-  });
+var iconUrl='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(iconSvg)));
 
-  document.getElementById('cnt-libre').textContent = libres.length;
-  document.getElementById('cnt-anticipo').textContent = conAnticipo.length;
-  document.getElementById('cnt-vacunas').textContent = urgentVacs.length;
+var mf={name:'Criadero Von Grünes Dorf',short_name:'CVG Dorf',start_url:'.',display:'standalone',background_color:'#1A1208',theme_color:'#1A1208',icons:[{src:iconUrl,sizes:'512x512',type:'image/svg+xml'},{src:iconUrl,sizes:'192x192',type:'image/svg+xml'}]};
+var bl=new Blob([JSON.stringify(mf)],{type:'application/json'});
+var ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(bl);document.head.appendChild(ml);
 
-  renderLibres(libres);
-  renderAnticipo(conAnticipo);
-  renderVacunas(criadero);
-  applyFilters();
-}
-
-function groupBySection(pups) {
-  const groups = new Map();
-  pups.forEach(p => {
-    const key = p.camada + '|' + p.madre + '|' + p.padre;
-    if (!groups.has(key)) groups.set(key, { camada:p.camada, madre:p.madre, padre:p.padre,
-      tipo:p.tipo, fecha:p.fecha_camada, pups:[] });
-    groups.get(key).pups.push(p);
-  });
-  return [...groups.values()];
-}
-
-function renderLibres(libres) {
-  const groups = groupBySection(libres);
-  let html = `<div class="section visible" id="sec-libre">
-    <div class="sec-head"><div class="sec-dot sd-g"></div>
-    <div class="sec-title">Sin anticipo</div>
-    <div class="sec-count">${libres.length} cachorros</div></div>`;
-
-  groups.forEach(g => {
-    const weeks = g.pups[0].fn ? weeksOld(g.pups[0].fn) : 0;
-    html += `<div class="breed-group">
-      <div class="breed-hdr">
-        <span class="btag ${breedTag(g.tipo)}">${shortRaza(g.tipo)}</span>
-        <span class="bcam">${g.camada} · ${g.madre} × ${g.padre} · ${g.fecha}</span>
-      </div>`;
-    g.pups.forEach(p => {
-      const w = p.fn ? weeksOld(p.fn) : 0;
-      html += `<div class="pup" data-raza="${p.tipo}" data-search="${p.no} ${p.tipo} ${p.madre} ${p.camada}">
-        <div class="pnum ${p.sexo==='Macho'?'pm':'pf'}">${p.no}</div>
-        <div class="pinfo">
-          <div class="p-r1">
-            <span class="p-raza">${shortRaza(p.tipo)}</span>
-            <span class="p-sexo">${p.sexo}</span>
-            <span class="p-camada">${p.camada}</span>
-          </div>
-          <div class="p-r2">${p.madre} × ${p.padre} · ${w} sem</div>
-          <div class="vacs">
-            <span class="vlbl">Vac</span>
-            ${vdotHtml(p.parvo)}${vdotHtml(p.cano1)}${vdotHtml(p.cano2)}
-            <div class="vsep"></div>
-            <span class="vlbl">Desp</span>
-            ${vdotHtml(p.hunt1)}${vdotHtml(p.hunt2)}
-          </div>
-        </div>
-        <div class="pright">
-          <div class="pprecio">${fmtQ(p.precio)}</div>
-          <span class="rdot ${rdotClass(w)}"></span>
-        </div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-
-  if (libres.length === 0) html += `<div class="empty-msg">Sin cachorros libres</div>`;
-  html += `</div>`;
-  document.getElementById('main-content').innerHTML = html +
-    (document.getElementById('sec-anticipo') ? document.getElementById('sec-anticipo').outerHTML : '') +
-    (document.getElementById('sec-vacunas') ? document.getElementById('sec-vacunas').outerHTML : '');
-  // Re-render all sections
-  renderSections(libres);
-}
-
-function renderSections(libres) {
-  // Already called from renderAll — just update content area
-}
-
-function buildLibreHTML(libres) {
-  const groups = groupBySection(libres);
-  let html = `<div class="section" id="sec-libre">
-    <div class="sec-head"><div class="sec-dot sd-g"></div>
-    <div class="sec-title">Sin anticipo</div>
-    <div class="sec-count">${libres.length} cachorros</div></div>`;
-  groups.forEach(g => {
-    html += `<div class="breed-group">
-      <div class="breed-hdr">
-        <span class="btag ${breedTag(g.tipo)}">${shortRaza(g.tipo)}</span>
-        <span class="bcam">${g.camada} · ${g.madre} × ${g.padre} · ${g.fecha}</span>
-      </div>`;
-    g.pups.forEach(p => {
-      const w = p.fn ? weeksOld(p.fn) : 0;
-      html += `<div class="pup" data-raza="${p.tipo}" data-search="${p.no} ${p.tipo} ${p.madre} ${p.camada}">
-        <div class="pnum ${p.sexo==='Macho'?'pm':'pf'}">${p.no}</div>
-        <div class="pinfo">
-          <div class="p-r1"><span class="p-raza">${shortRaza(p.tipo)}</span>
-            <span class="p-sexo">${p.sexo}</span>
-            <span class="p-camada">${p.camada}</span></div>
-          <div class="p-r2">${p.madre} × ${p.padre} · ${w} sem</div>
-          <div class="vacs"><span class="vlbl">Vac</span>
-            ${vdotHtml(p.parvo)}${vdotHtml(p.cano1)}${vdotHtml(p.cano2)}
-            <div class="vsep"></div><span class="vlbl">Desp</span>
-            ${vdotHtml(p.hunt1)}${vdotHtml(p.hunt2)}</div>
-        </div>
-        <div class="pright"><div class="pprecio">${fmtQ(p.precio)}</div>
-          <span class="rdot ${rdotClass(w)}"></span></div>
-      </div>`;
-    });
-    html += `</div>`;
-  });
-  if (!libres.length) html += `<div class="empty-msg">Sin cachorros libres</div>`;
-  return html + `</div>`;
-}
-
-function buildAnticipHTML(conAnticipo) {
-  let html = `<div class="section" id="sec-anticipo">
-    <div class="sec-head"><div class="sec-dot sd-a"></div>
-    <div class="sec-title">Con anticipo recibido</div>
-    <div class="sec-count">${conAnticipo.length} cachorros</div></div>`;
-  conAnticipo.forEach(p => {
-    const w = p.fn ? weeksOld(p.fn) : 0;
-    const ant = parseFloat(p.anticipo)||0;
-    const prec = parseFloat(p.precio)||0;
-    const pend = parseFloat(p.pendiente)||0;
-    const pct = prec ? Math.round(ant/prec*100) : 0;
-    html += `<div class="rcard" data-raza="${p.tipo}" data-search="${p.no} ${p.tipo} ${p.madre} ${p.camada}">
-      <div class="rtop" onclick="toggleCard(this)">
-        <div class="rnum ${p.sexo==='Macho'?'pm':'pf'}">${p.no}</div>
-        <div class="rinfo">
-          <div class="rname">${shortRaza(p.tipo)} ${p.sexo}</div>
-          <div class="rsub">${p.camada} · ${p.madre} × ${p.padre} · ${w} sem</div>
-        </div>
-        <div class="rbadge rb-a">Q${pend.toLocaleString('es-GT')} pend.</div>
-      </div>
-      <div class="rbody">
-        <div class="prog"><div class="progf pf-p" style="width:${pct}%"></div></div>
-        <div class="rrows">
-          <div class="rrow"><span class="rk">Total acordado</span><span class="rv">${fmtQ(p.precio)}</span></div>
-          <div class="rrow"><span class="rk">Anticipo recibido</span><span class="rv rv-g">${fmtQ(p.anticipo)}</span></div>
-          <div class="rrow"><span class="rk">Pendiente</span><span class="rv rv-a">${fmtQ(p.pendiente)}</span></div>
-        </div>
-        ${p.notas ? `<div class="rnote">${p.notas}</div>` : ''}
-        <div class="rvacs"><span class="vlbl">Vac</span>
-          ${vdotHtml(p.parvo)}${vdotHtml(p.cano1)}${vdotHtml(p.cano2)}
-          <div class="vsep"></div><span class="vlbl">Desp</span>
-          ${vdotHtml(p.hunt1)}${vdotHtml(p.hunt2)}</div>
-      </div>
-    </div>`;
-  });
-  if (!conAnticipo.length) html += `<div class="empty-msg">Sin cachorros con anticipo</div>`;
-  return html + `</div>`;
-}
-
-function buildVacHTML(criadero) {
-  const today_ = today();
-  // For each cachorro, check all vaccines
-  const alerts = [];
-  criadero.forEach(p => {
-    const vacs = ['parvo','cano1','cano2','hunt1','hunt2'];
-    const urgentVacs = vacs.filter(v => {
-      const st = vacStatus(p.fn, p[v], PROTOCOL[v]);
-      return st === 'overdue' || st === 'soon' || st === 'future';
-    });
-    if (!urgentVacs.length) return;
-    const worstStatus = urgentVacs.some(v => vacStatus(p.fn,p[v],PROTOCOL[v])==='overdue') ? 'overdue'
-      : urgentVacs.some(v => vacStatus(p.fn,p[v],PROTOCOL[v])==='soon') ? 'soon' : 'future';
-    alerts.push({ pup:p, vacs:urgentVacs, status:worstStatus });
-  });
-
-  alerts.sort((a,b) => {
-    const order = {overdue:0,soon:1,future:2};
-    return (order[a.status]||2) - (order[b.status]||2);
-  });
-
-  const overdue = alerts.filter(a=>a.status==='overdue').length;
-  const soon = alerts.filter(a=>a.status==='soon').length;
-
-  let html = `<div class="section" id="sec-vacunas">
-    <div class="sec-head"><div class="sec-dot sd-r"></div>
-    <div class="sec-title">Control de vacunas</div>
-    <div class="sec-count">${overdue} vencidas · ${soon} próximas</div></div>`;
-
-  if (!alerts.length) {
-    html += `<div class="empty-msg">✓ Todas las vacunas al día</div>`;
-  } else {
-    alerts.forEach(a => {
-      const p = a.pup; const w = p.fn ? weeksOld(p.fn) : 0;
-      const cls = a.status==='overdue'?'va-overdue':a.status==='soon'?'va-soon':'va-future';
-      const badgeCls = a.status==='overdue'?'vab-overdue':a.status==='soon'?'vab-soon':'vab-future';
-      const badgeTxt = a.status==='overdue'?'VENCIDA':a.status==='soon'?'PRÓXIMA':'FUTURA';
-      let vacPills = a.vacs.map(v => {
-        const st = vacStatus(p.fn, p[v], PROTOCOL[v]);
-        const diff = vacDiff(p.fn, PROTOCOL[v]);
-        const pillCls = st==='overdue'?'vv-due':st==='soon'?'vv-soon':st==='future'?'vv-future':'vv-done';
-        const diffTxt = diff!==null ? (diff<0?` (${Math.abs(diff)}d atrás)`:diff===0?' (hoy)':` (${diff}d)`) : '';
-        return `<span class="va-vac ${pillCls}">${VAC_LABELS[v]}${diffTxt}</span>`;
-      }).join('');
-
-      html += `<div class="vac-alert-card ${cls}">
-        <div class="va-inner">
-          <div class="va-top">
-            <div class="va-name">No.${p.no} — ${shortRaza(p.tipo)} ${p.sexo}</div>
-            <span class="va-badge ${badgeCls}">${badgeTxt}</span>
-          </div>
-          <div class="va-sub">${p.camada} · ${p.madre} × ${p.padre} · ${w} sem · ${p.fnStr}</div>
-          <div class="va-vacs">${vacPills}</div>
-        </div>
-      </div>`;
-    });
-  }
-  return html + `</div>`;
-}
-
-function renderLibres(libres) {} // stubs replaced below
-function renderAnticipo(c) {}
-function renderVacunas(c) {}
-
-function renderAll() {
-  const criadero = allData.filter(r => r.estado === 'Criadero');
-  const libres = criadero.filter(r => !r.anticipo || r.anticipo === '');
-  const conAnticipo = criadero.filter(r => r.anticipo && parseFloat(r.pendiente||0) > 0);
-  const urgentVacs = criadero.filter(r =>
-    ['parvo','cano1','cano2','hunt1','hunt2'].some(v =>
-      ['overdue','soon'].includes(vacStatus(r.fn, r[v], PROTOCOL[v]))));
-
-  document.getElementById('cnt-libre').textContent = libres.length;
-  document.getElementById('cnt-anticipo').textContent = conAnticipo.length;
-  document.getElementById('cnt-vacunas').textContent = urgentVacs.length;
-
-  document.getElementById('main-content').innerHTML =
-    buildLibreHTML(libres) +
-    buildAnticipHTML(conAnticipo) +
-    buildVacHTML(criadero);
-
-  applyTab();
-}
-
-function setTab(tab, cell) {
-  curTab = tab;
-  document.querySelectorAll('.stat').forEach(s => s.classList.remove('active'));
-  if (cell) cell.classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const navIdx = {libre:0,anticipo:1,vacunas:2};
-  const navBtns = document.querySelectorAll('.nav-btn');
-  if (navIdx[tab] !== undefined) navBtns[navIdx[tab]].classList.add('active');
-  applyTab();
-}
-
-function applyTab() {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
-  const sec = document.getElementById('sec-' + curTab);
-  if (sec) sec.classList.add('visible');
-  applyFilters();
-}
-
-function setRaza(raza, btn) {
-  curRaza = raza;
-  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('on'));
-  if (btn) btn.classList.add('on');
-  applyFilters();
-}
-
-function applyFilters() {
-  const q = (document.getElementById('search-input').value || '').toLowerCase();
-  document.querySelectorAll('.pup, .rcard, .vac-alert-card').forEach(el => {
-    const raza = el.dataset.raza || '';
-    const search = (el.dataset.search || '').toLowerCase();
-    const razaOk = curRaza === 'all' || raza === curRaza;
-    const searchOk = !q || search.includes(q);
-    el.style.display = (razaOk && searchOk) ? '' : 'none';
-  });
-  // Hide breed-group headers if all pups hidden
-  document.querySelectorAll('.breed-group').forEach(g => {
-    const visible = [...g.querySelectorAll('.pup')].some(p => p.style.display !== 'none');
-    g.style.display = visible ? '' : 'none';
-  });
-}
-
-function toggleCard(hdr) {
-  const body = hdr.nextElementSibling;
-  body.style.display = body.style.display === 'block' ? 'none' : 'block';
-}
-
-function toggleSearch() {
-  searchActive = !searchActive;
-  const bar = document.getElementById('search-bar');
-  bar.classList.toggle('visible', searchActive);
-  if (searchActive) document.getElementById('search-input').focus();
-  else { document.getElementById('search-input').value=''; applyFilters(); }
-  document.querySelectorAll('.nav-btn')[3].classList.toggle('active', searchActive);
-}
-
-// PWA manifest
-const manifest = {
-  name: 'Criadero Von Grünes Dorf',
-  short_name: 'CVG Dorf',
-  start_url: '.',
-  display: 'standalone',
-  background_color: '#1A1208',
-  theme_color: '#1A1208',
-  icons: [{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231A1208"/><text y=".9em" font-size="80">🐕</text></svg>',sizes:'any',type:'image/svg+xml'}]
-};
-const blob = new Blob([JSON.stringify(manifest)],{type:'application/json'});
-document.getElementById('manifest-link').href = URL.createObjectURL(blob);
-
-// Load on start
 loadData();
-// Auto-refresh every 5 minutes
-setInterval(loadData, 300000);
+setInterval(loadData,300000);
 </script>
 </body>
 </html>
