@@ -252,11 +252,12 @@ function render(){
 
   // ── VENTAS ────────────────────────────────────────────────────────────────
   var vendidos=data.filter(function(r){return r.estado==='Entregado'||r.estado==='Vendido';});
-  vendidos.sort(function(a,b){return (b.precio||0)-(a.precio||0);});
+  vendidos.sort(function(a,b){return b.no-a.no;});
   var totalRev=vendidos.reduce(function(s,r){return s+(parseFloat(r.precio)||0);},0);
   var byTipo={};
   vendidos.forEach(function(p){if(!byTipo[p.tipo])byTipo[p.tipo]={pups:[],rev:0};byTipo[p.tipo].pups.push(p);byTipo[p.tipo].rev+=(parseFloat(p.precio)||0);});
   var tiposSorted=Object.keys(byTipo).sort(function(a,b){return byTipo[b].rev-byTipo[a].rev;});
+  Object.keys(byTipo).forEach(function(t){byTipo[t].pups.sort(function(a,b){return b.no-a.no;});});
   document.getElementById('cn-ventas').textContent=vendidos.length;
   html+='<div class="sec" id="sec-ventas">';
   html+='<div class="sec-hd"><div class="sdot" style="background:var(--gold-l)"></div><div class="sec-ttl">Historial de ventas</div><div class="sec-cnt">'+vendidos.length+' entregados · Q'+Math.round(totalRev).toLocaleString('es-GT')+'</div></div>';
@@ -265,7 +266,7 @@ function render(){
     var g=byTipo[tipo];
     html+='<div class="vt-breed"><div class="vt-breed-hdr"><span class="btag '+bCls(tipo)+'">'+shT(tipo)+'</span><span class="vt-breed-rev">Q'+Math.round(g.rev).toLocaleString('es-GT')+' · '+g.pups.length+' vendidos</span></div>';
     g.pups.forEach(function(p){
-      html+='<div class="vt-row"><div class="pno '+(p.sexo==='Macho'?'pm':'pf')+'" style="width:38px;height:38px;font-size:11px;flex-shrink:0">'+p.no+'</div>';
+      html+='<div class="vt-row" data-raza="'+p.tipo+'" data-s="'+p.no+' '+p.tipo+' '+p.madre+' '+p.notas+'"><div class="pno '+(p.sexo==='Macho'?'pm':'pf')+'" style="width:38px;height:38px;font-size:11px;flex-shrink:0">'+p.no+'</div>';
       html+='<div class="vt-inf">';
       html+='<div class="vt-top"><span class="vt-nm">'+shT(p.tipo)+' '+p.sexo+'</span><span class="vt-price-inline">Q'+(parseFloat(p.precio)||0).toLocaleString('es-GT')+'</span></div>';
       if(p.notas)html+='<div class="vt-buyer"><span class="vt-buyer-ic">👤</span>'+p.notas+'</div>';
@@ -282,7 +283,7 @@ function render(){
 }
 function setTab(tab,el){curTab=tab;document.querySelectorAll('.stt').forEach(function(s){s.classList.remove('on');});if(el)el.classList.add('on');document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on');});var navMap={libre:0,anticipo:1,vacunas:2,ventas:3};var nbs=document.querySelectorAll('.nb');if(navMap[tab]!==undefined)nbs[navMap[tab]].classList.add('on');document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});var s=document.getElementById('sec-'+tab);if(s)s.classList.add('on');applyFilters();}
 function setRaza(raza,btn){curRaza=raza;document.querySelectorAll('.ftb').forEach(function(b){b.classList.remove('on');});if(btn)btn.classList.add('on');applyFilters();}
-function applyFilters(){var q=(document.getElementById('srch-in').value||'').toLowerCase();document.querySelectorAll('.pup,.rc,.va').forEach(function(el){var razaOk=curRaza==='all'||el.dataset.raza===curRaza;var srchOk=!q||(el.dataset.s||'').toLowerCase().includes(q);el.style.display=(razaOk&&srchOk)?'':'none';});document.querySelectorAll('#sec-libre .bg-hdr').forEach(function(hdr){var next=hdr.nextElementSibling;var vis=false;while(next&&next.classList.contains('pup')){if(next.style.display!=='none')vis=true;next=next.nextElementSibling;}hdr.style.display=vis?'':'none';});}
+function applyFilters(){var q=(document.getElementById('srch-in').value||'').toLowerCase();document.querySelectorAll('.pup,.rc,.va,.vt-row').forEach(function(el){var razaOk=curRaza==='all'||el.dataset.raza===curRaza;var srchOk=!q||(el.dataset.s||'').toLowerCase().includes(q);el.style.display=(razaOk&&srchOk)?'flex':'';if(el.classList.contains('pup')||el.classList.contains('va'))el.style.display=(razaOk&&srchOk)?'':'none';});document.querySelectorAll('.vt-breed').forEach(function(g){var vis=g.querySelectorAll('.vt-row');var anyVis=Array.from(vis).some(function(r){return r.style.display!==''&&r.style.display!=='none';});g.style.display=anyVis||curRaza==='all'?'':'none';});document.querySelectorAll('#sec-libre .bg-hdr').forEach(function(hdr){var next=hdr.nextElementSibling;var vis=false;while(next&&next.classList.contains('pup')){if(next.style.display!=='none')vis=true;next=next.nextElementSibling;}hdr.style.display=vis?'':'none';});}
 function tog(hdr){var b=hdr.nextElementSibling;b.style.display=b.style.display==='block'?'none':'block';}
 function toggleSearch(){srchOpen=!srchOpen;document.getElementById('srch').classList.toggle('show',srchOpen);document.getElementById('nb-srch').classList.toggle('on',srchOpen);if(srchOpen)document.getElementById('srch-in').focus();else{document.getElementById('srch-in').value='';applyFilters();}}
 
