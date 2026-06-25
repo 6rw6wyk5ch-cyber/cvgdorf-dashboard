@@ -110,11 +110,16 @@ body{background:var(--paper);color:var(--ink);font-family:'DM Mono',monospace;mi
 .vt-breed-rev{font-size:11px;color:var(--muted);margin-left:auto}
 .vt-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid rgba(255,255,255,.04)}
 .vt-inf{flex:1;min-width:0}
-.vt-top{display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap}
+.vt-top{display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:wrap;justify-content:space-between}
 .vt-nm{font-size:13px;font-weight:500;color:var(--ink)}
 .vt-note{font-size:10px;color:var(--muted);letter-spacing:.02em}
 .vt-sub{font-size:11px;color:var(--muted)}
 .vt-price{font-size:14px;font-weight:500;color:var(--sage-l);flex-shrink:0;font-family:'Cormorant Garamond',serif}
+.vt-price-inline{font-size:13px;font-weight:500;color:var(--sage-l);margin-left:auto;font-family:'Cormorant Garamond',serif}
+.vt-buyer{font-size:11px;color:var(--ink);margin-top:3px;opacity:.85}
+.vt-buyer-ic{margin-right:4px;font-size:10px}
+.vt-detail{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.01em}
+.vt-detail-ic{margin-right:4px}
 </style>
 </head>
 <body>
@@ -260,10 +265,13 @@ function render(){
     var g=byTipo[tipo];
     html+='<div class="vt-breed"><div class="vt-breed-hdr"><span class="btag '+bCls(tipo)+'">'+shT(tipo)+'</span><span class="vt-breed-rev">Q'+Math.round(g.rev).toLocaleString('es-GT')+' · '+g.pups.length+' vendidos</span></div>';
     g.pups.forEach(function(p){
-      html+='<div class="vt-row"><div class="pno '+(p.sexo==='Macho'?'pm':'pf')+'" style="width:36px;height:36px;font-size:11px">'+p.no+'</div>';
-      html+='<div class="vt-inf"><div class="vt-top"><span class="vt-nm">'+shT(p.tipo)+' '+p.sexo+'</span>'+(p.notas?'<span class="vt-note">'+p.notas+'</span>':'')+'</div>';
-      html+='<div class="vt-sub">'+p.camada+' · '+p.madre+'</div></div>';
-      html+='<div class="vt-price">Q'+(parseFloat(p.precio)||0).toLocaleString('es-GT')+'</div></div>';
+      html+='<div class="vt-row"><div class="pno '+(p.sexo==='Macho'?'pm':'pf')+'" style="width:38px;height:38px;font-size:11px;flex-shrink:0">'+p.no+'</div>';
+      html+='<div class="vt-inf">';
+      html+='<div class="vt-top"><span class="vt-nm">'+shT(p.tipo)+' '+p.sexo+'</span><span class="vt-price-inline">Q'+(parseFloat(p.precio)||0).toLocaleString('es-GT')+'</span></div>';
+      if(p.notas)html+='<div class="vt-buyer"><span class="vt-buyer-ic">👤</span>'+p.notas+'</div>';
+      html+='<div class="vt-detail"><span class="vt-detail-ic">🐾</span>'+p.madre+' × '+p.padre+'</div>';
+      html+='<div class="vt-detail"><span class="vt-detail-ic">📅</span>Nac: '+(p.fn||'—')+(p.camada?' · '+p.camada:'')+'</div>';
+      html+='</div></div>';
     });
     html+='</div>';
   });
