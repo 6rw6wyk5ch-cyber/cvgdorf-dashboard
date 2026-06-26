@@ -209,8 +209,7 @@ async function loadData(){
   btn.classList.remove('spin');
 }
 function buildFilters(){
-  var cr=data.filter(function(r){return r.estado==='Criadero';});
-  var razas=[...new Set(cr.map(function(r){return r.tipo;}))].sort();
+  var razas=[...new Set(data.map(function(r){return r.tipo;}))].sort();
   var f=document.getElementById('fltrs');
   f.innerHTML='<button class="ftb on" onclick="setRaza(\'all\',this)">Todos</button>';
   razas.forEach(function(raza){var b=document.createElement('button');b.className='ftb';b.textContent=shT(raza);b.onclick=function(){setRaza(raza,this);};f.appendChild(b);});
